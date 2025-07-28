@@ -12,14 +12,10 @@ const DOMAINS_MAP = {
 };
 
 const PROXIES = {
-  tw: process.env.BRD_PROXY_TW,
-  id: process.env.BRD_PROXY_ID,
   fr: process.env.BRD_PROXY_FR,
 };
 
 const USER_AGENTS = {
-  tw: "PenidaDiveCenter-CacheWarmer-TW/1.0",
-  id: "PenidaDiveCenter-CacheWarmer-ID/1.0",
   fr: "PenidaDiveCenter-CacheWarmer-FR/1.0",
 };
 
@@ -113,7 +109,7 @@ async function purgeCloudflareCache(url) {
   }
 }
 
-async function warmUrls(urls, country, batchSize = 3, delay = 5000) {
+async function warmUrls(urls, country, batchSize = 1, delay = 2000) {
   const proxy = PROXIES[country];
   const agent = new HttpsProxyAgent(proxy);
 
