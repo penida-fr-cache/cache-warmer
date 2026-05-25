@@ -10,7 +10,7 @@ const APPS_SCRIPT_URL = process.env.APPS_SCRIPT_URL; // URL Web App GAS /exec
 
 /* ====== KONFIG DOMAIN/PROXY/UA ====== */
 const DOMAINS_MAP = {
-  fr: "https://penidadivecenter.fr",
+  fr: "https://divingpenida.fr",
 };
 
 const PROXIES = {
@@ -18,7 +18,7 @@ const PROXIES = {
 };
 
 const USER_AGENTS = {
-  fr: "PenidaDiveCenter - CacheWarmer - FR / 1.0",
+  fr: "DivingPenida - CacheWarmer - FR / 1.0",
 };
 
 /* ====== CLOUDFLARE (opsional) ====== */
@@ -94,7 +94,7 @@ class AppsScriptLogger {
       const res = await axios.post(
         APPS_SCRIPT_URL,
         { sheetName: this.sheetName, rows: this.rows },
-        { timeout: 20000, headers: { "Content-Type": "application/json" } }
+        { timeout: 90000, headers: { "Content-Type": "application/json" } }
       );
       console.log("Apps Script response:", res.status, res.data);
       if (!res.data?.ok) console.warn("Apps Script replied error:", res.data);

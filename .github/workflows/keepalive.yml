@@ -2,28 +2,31 @@ name: Keep Repo Active
 
 on:
   schedule:
-    - cron: "0 0 * * 0"   # Jalankan setiap minggu (Minggu 00:00 UTC)
-  workflow_dispatch:
+    - cron: "0 0 1,15 * *"   # Jalankan tgl 1 dan 15 setiap bulan (2x/bulan)
+  workflow_dispatch:            # Manual trigger juga bisa
 
 permissions:
-  contents: write   # agar bisa push commit
+  contents: write
 
 jobs:
   keepalive:
     runs-on: ubuntu-latest
 
     steps:
-      # Clone repo dengan full history (perlu untuk git log)
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Check if repo inactive >45 days
+      - name: Check last commit age
         id: check
         run: |
-          COUNT=$(git log --since="45 days ago" --oneline | wc -l)
-          echo "Recent commits: $COUNT"
-          if [ "$COUNT" -eq 0 ]; then
+          LAST_DATE=$(git log -1 --format=%ci)
+          LAST_TS=$(date -d "$LAST_DATE" +%s)
+          NOW_TS=$(date +%s)
+          DAYS_AGO=$(( (NOW_TS - LAST_TS) / 86400 ))
+          echo "Last commit was $DAYS_AGO days ago ($LAST_DATE)"
+          # Commit jika sudah > 25 hari tanpa commit (jauh sebelum batas 60 hari GitHub)
+          if [ "$DAYS_AGO" -gt 25 ]; then
             echo "stale=true" >> $GITHUB_OUTPUT
           else
             echo "stale=false" >> $GITHUB_OUTPUT
@@ -34,5 +37,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit --allow-empty -m "chore: keep repo active"
+          git commit --allow-empty -m "chore: keepalive – prevent GitHub from disabling scheduled workflows"
           git push
+
